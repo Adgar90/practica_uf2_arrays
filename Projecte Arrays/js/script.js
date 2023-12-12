@@ -1,20 +1,22 @@
 			
-// POKEMONS
+/* TODO
+	ARRAY Multidimensional per emmagatzemar més d'un valor
+*/
 
-let dades = [
-];
-let longitud = 0;
-let pokemons;
-let municipis;
-let meteorites;
-let movies;
-
+let longitud = 1000;
+let pokemons = [];
+let municipis = [];
+let meteorites = [];
+let movies = [];
 // POKEMONS
 fetch("js/data/pokemon.json")
 .then((response) => response.json())
 .then((data) => {
-	pokemons= data.pokemon;
-	longitud += pokemons.length;
+	datos= data.pokemon;
+	datos.forEach(element => {
+		pokemons.push(element.name);	
+	});
+	//dades.push(pokemons);
 });
 
 
@@ -24,8 +26,11 @@ fetch("js/data/pokemon.json")
 fetch("js/data/municipis.json")
 .then((response) => response.json())
 .then((data) => {
-	municipis = data.elements;	
-	longitud += municipis.length;
+	datos = data.elements;
+	datos.forEach(element => {	
+		municipis.push(element.municipi_nom);
+	});
+	//dades.push(municipis);
 });
 
 
@@ -33,11 +38,11 @@ fetch("js/data/municipis.json")
 fetch("js/data/earthMeteorites.json")
 .then((response) => response.json())
 .then((data) => {
-	meteorites = data;		
-	longitud += meteorites.length;
-	// meteorites.forEach(element => {	
-	// 	console.log(element.name)
-	// });
+	datos = data;		
+	datos.forEach(element => {	
+		meteorites.push(element.name);
+	});
+	//dades.push(meteorites);
 });
 
 
@@ -45,44 +50,45 @@ fetch("js/data/earthMeteorites.json")
 fetch("js/data/movies.json")
 .then((response) => response.json())
 .then((data) => {
-	movies = data.movies;		
-	
-	// movies.forEach(element => {	
-	// 	console.log(element.title)
-	// });
+	datos = data.movies;
+	datos.forEach(element => {
+		movies.push(element.title);
+	});
+	//dades.push(movies);
 });
 
-function ompleDades() {
-
+function mostraResults() {
+	
+	let dades = []
 	for (let i=0; i<longitud; i++) {
 		let data = {
 			name : pokemons[i],
+			municipi_nom : municipis[i],
+			title : movies[i],
+			name_meteorite : meteorites[i]
 		}
 		dades.push(data);
 	}
+	console.table(dades);
+	
 }
 
-function mostraResults() {
-	ompleDades();
-	let prova = [
-		dade = {
-			nom : "",
-			municipisi : "Pepito",
-			meteor : "Gamma",
-			mov : "Pep"
-		},
-		dade = {
-			nom : "Pepe",
-			municipisi : "Garcia",
-			meteor : "Gamma",
-			mov : "Pep"
-		}
-	]
-	console.clear();
-	console.table(dades.data, );
+// funció orderList que rep string per paràmetre (asc o desc) i retorna l'array ordenada
+function orderList(order) {
+
+}
+// funció que retorna la posició d'un element buscat mitjantçant un prompt
+function searchList() {
+
+}
+// funcio que calculi la mitjana d'un valor numèric (fixar a dos decimals amb toFixed(2))
+function calcMitjana() {
+
+}
+// funció que crea la taula i mitjançant el DOM mostra el resultat en el div "resultat"
+function printList() {
 	console.log(dades.length);
-	console.log(municipis.length);
-	console.log(meteorites.length);
-	console.log(movies.length); 
+	for (let i=0; i<dades.length; i++) {
+		document.write(dades[i]);
+	}
 }
-
