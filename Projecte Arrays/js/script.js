@@ -73,9 +73,26 @@ function searchList() {
 	let inputs = document.querySelectorAll("input");
 	let column = "";
 	inputs.forEach(type => { if(type.checked) { column = type.id; } });
-	console.log(column);
 	let name = prompt("Introdueix un nom a buscar").toUpperCase();
 	let match = [];
+	switch (column) {
+		case "poke":
+			match = returnMatches(pokemons, name);
+			break;
+		case "municipi":
+			match = returnMatches(municipis, name);
+			break;
+		case "movie":
+			match = returnMatches(movies, name);
+			break;
+		case "meteorit":
+			match = returnMatches(meteorites, name);
+			break;
+		default:
+			console.log("No hi ha cap taula seleccionada");
+			return;
+	}
+	// iteració per mostrar les concondances amb el paràmetre que li passem
 	// dades.forEach((item) => item.forEach(
 	// 	(x) => {
 	// 		if(x != undefined && x.toUpperCase().includes(name)) {
@@ -104,4 +121,14 @@ function ordenaDesc() {
 	municipis.reverse();
 	movies.reverse();
 	meteorites.reverse();
+}
+
+function returnMatches(array, name) {
+	let match = [];
+	array.forEach((element) => {
+		if(element.toUpperCase().includes(name)) {
+			match.push(element);
+		}
+	});
+	return match;
 }
