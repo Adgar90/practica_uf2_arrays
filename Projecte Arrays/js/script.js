@@ -70,7 +70,10 @@ function orderList(order) {
 }
 // funció que retorna la posició d'un element buscat mitjantçant un prompt
 function searchList() {
-	let type = document
+	let inputs = document.querySelectorAll("input");
+	let column = "";
+	inputs.forEach(type => { if(type.checked) { column = type.id; } });
+	console.log(column);
 	let name = prompt("Introdueix un nom a buscar").toUpperCase();
 	let match = [];
 	// dades.forEach((item) => item.forEach(
