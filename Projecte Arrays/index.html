@@ -5,15 +5,35 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Document</title>
+	<style>
+		body {
+			display: flex;
+		}
+		div {
+			padding: 10px;
+		}
+	</style>
 </head>
 <body>
-	<button onclick="mostraResults()">Mostra resultat</button>
-	<button onclick="location.reload()">Iniciar</button>
-	<button onclick="orderList('asc')">Order ASC</button>
-	<button onclick="orderList('desc')">Order DESC</button>
-	<button onclick="searcList()">Cercar</button>
-	<button onclick="calcMitjana()">Mitjana pes</button>
-	<button onclick="ompleArray()">print</button>
+	<div>
+		<input type="radio" name="type" id="poke">
+		<label for="poke">Pokemon</label><br>
+		<input type="radio" name="type" id="municipi">
+		<label for="municipi">Municipi</label><br>
+		<input type="radio" name="type" id="movie">
+		<label for="movie">Movies</label><br>
+		<input type="radio" name="type" id="meteorit">
+		<label for="meteorit">Meteorits</label>
+	</div>
+	<div>
+		<button onclick="mostraResults()">Mostra resultat</button>
+		<button onclick="location.reload()">Iniciar</button>
+		<button onclick="orderList('asc')">Order ASC</button>
+		<button onclick="orderList('desc')">Order DESC</button>
+		<button onclick="searchList()">Cercar</button>
+		<button onclick="calcMitjana()">Mitjana pes</button>
+		<button onclick="ompleArray()">Print</button>
+	</div>
 	<div id="resultat"></div>
 	<script src="js/script.js"></script>
 </body>
