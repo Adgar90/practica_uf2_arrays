@@ -8,33 +8,46 @@
 	<style>
 		body {
 			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
 		}
-		div {
+		div, td {
 			padding: 10px;
 		}
+		td {
+			border: 1px solid black;
+		}
+		img {
+			width: 120px;
+		}
 	</style>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 	<div>
 		<input type="radio" name="type" id="poke">
-		<label for="poke">Pokemon</label><br>
+		<label for="poke">Pokemon</label>
 		<input type="radio" name="type" id="municipi">
-		<label for="municipi">Municipi</label><br>
+		<label for="municipi">Municipi</label>
 		<input type="radio" name="type" id="movie">
-		<label for="movie">Movies</label><br>
+		<label for="movie">Movies</label>
 		<input type="radio" name="type" id="meteorit">
 		<label for="meteorit">Meteorits</label>
 	</div>
 	<div>
-		<button onclick="mostraResults()">Mostra resultat</button>
 		<button onclick="location.reload()">Iniciar</button>
 		<button onclick="orderList('asc')">Order ASC</button>
 		<button onclick="orderList('desc')">Order DESC</button>
 		<button onclick="searchList()">Cercar</button>
-		<button onclick="calcMitjana()">Mitjana pes</button>
-		<button onclick="ompleArray()">Print</button>
+		<button onclick="calcMitjana()">Calcula Mitjana</button>
+		<button onclick="printList()">Print</button>
 	</div>
 	<div id="resultat"></div>
+	<div class="chart-container" style="position: relative; width:700px">
+		<canvas id="myChart"></canvas>
+	</div>
 	<script src="js/script.js"></script>
 </body>
 </html>
