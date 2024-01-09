@@ -1,10 +1,14 @@
 			
-/* TODO
-	ARRAY Multidimensional per emmagatzemar més d'un valor
+/* 
+	ARRAYS CHART
 */
+let arrayLabels = [];
+let arrayDadesGraf = [];
+let backgroundColor = [];
+let borderColor = [];
 
+// VARIABLES TRACTAMENT DADES
 let longitud = 1000;
-
 let dades = [];
 let pokemons = [];
 let municipis = [];
@@ -20,12 +24,11 @@ fetch("js/data/pokemon.json")
 		pokemon.push(element.num);
 		pokemon.push(element.img);
 		pokemon.push(element.name);
+		pokemon.push(element.type);
 		pokemon.push(element.weight);
 		pokemons.push(pokemon);	
 	});
 });
-
-
 
 
 // MUNICIPIS
@@ -69,11 +72,14 @@ fetch("js/data/movies.json")
 		let movie = [];
 		movie.push(element.url);
 		movie.push(element.title);
+		movie.push(element.genres);
 		movie.push(element.year);
 		movie.push(element.rating);
 		movies.push(movie);
 	});
 });
+
+
 
 function mostraResults() {
 	console.clear();
@@ -81,7 +87,7 @@ function mostraResults() {
 	for (let i=0; i<longitud; i++) {
 		dades.push([pokemons[i], municipis[i], movies[i], meteorites[i]]);
 	}
-	console.table(dades);
+	//console.table(dades);
 }
 
 // funció orderList que rep string per paràmetre (asc o desc) i mostra l'array ordenada
@@ -111,25 +117,25 @@ function calcMitjana() {
 			pokemons.forEach(pokemon => {
 				valorNum += parseFloat(pokemon[pokemon.length-1].substr(0, pokemon[pokemon.length-1].search(" ")));
 			} ); 
-			resultat = (valorNum/pokemons.length).toFixed(2);
+			resultat = `La mitjana de pes dels pokemons és de ${(valorNum/pokemons.length).toFixed(2)} kg.`;
 			break;
 		case "municipi":		
 			municipis.forEach(municipi => {
 				valorNum += parseFloat(municipi[municipi.length-1]);
 			} ); 
-			resultat = (valorNum/municipis.length).toFixed(2);
+			resultat = `La mitjana d'habitants dels municipis és de ${(valorNum/municipis.length).toFixed(2)} habitants.`;
 			break;
 		case "movie":
 			movies.forEach(movie => {
 				valorNum += parseFloat(movie[movie.length-1]);
 			} ); 
-			resultat = (valorNum/movies.length).toFixed(2);
+			resultat = `La mitjana de valoració de les pel·lícules és de ${(valorNum/movies.length).toFixed(2)} de rating.`;
 			break;
 		case "meteorit":
 			meteorites.forEach(meteorit => {
 				meteorit[meteorit.length-1] != undefined ? valorNum += parseFloat(meteorit[meteorit.length-1]) : valorNum += 0;
 			} ); 
-			resultat = (valorNum/meteorites.length).toFixed(2);
+			resultat = `La mitjana de massa dels meteorits és de ${(valorNum/meteorites.length).toFixed(2)} kg.`;
 			break;
 		default:
 			console.log("No hi ha cap taula seleccionada");
@@ -138,7 +144,7 @@ function calcMitjana() {
 	alert(resultat); // TODO: editar el missatge de resultat 
 }
 // funció que crea la taula i mitjançant el DOM mostra el resultat en el div "resultat"
-function printList() {
+function printDades() {
 	let radio = returnRadio();
 	let trHeader = document.createElement("tr");
 	switch (radio) {
@@ -169,7 +175,7 @@ function ordenaAsc() {
 	municipis.sort();
 	movies.sort();
 	meteorites.sort();
-	printList();
+	printDades();
 }
 //funció per ordenar de forma descendent (z-a) els valors de l'array
 function ordenaDesc() {
@@ -178,7 +184,7 @@ function ordenaDesc() {
 	municipis.reverse();
 	movies.reverse();
 	meteorites.reverse();
-	printList();
+	printDades();
 }
 // funció que retorna les coincidencies amb el paràmetre proposat
 function returnMatches(name) {
@@ -220,7 +226,7 @@ function creaTaula(array, trHeader) {
 	let divResultat = document.getElementById("resultat");
 	// inicialitzem el div per esborrar el contingut
 	divResultat.innerHTML = "";
-
+	initLabels(array);
 	//creació de taula
 	let table = document.createElement("table");
 	table.appendChild(trHeader);
@@ -228,7 +234,6 @@ function creaTaula(array, trHeader) {
 		let tr = document.createElement("tr");
 		element.forEach((data) => {
 			let td = document.createElement("td");
-			console.log(data);
 			if (data != undefined && (data.toString().endsWith(".png") || data.toString().endsWith(".jpg"))) {
 				let img = document.createElement("img");
 				img.src = data;
@@ -258,16 +263,16 @@ function returnHeaders(radio) {
 	let headers = [];
 	switch (radio) {
 		case "poke":
-			headers = ["#", "Imatge", "Nom", "Pes"];
+			headers = ["#", "Imatge", "Nom", "Tipus", "Pes"];
 			break;
 		case "municipi":
 			headers = ["Municipi", "Imatge", "INE", "Nº Habitants"];		
 			break;
 		case "movie":
-			headers = ["Imatge", "Títol", "Any", "Rating"];
+			headers = ["Imatge", "Títol", "Gènere", "Any", "Rating"];
 			break;
 		case "meteorit":
-			headers = ["#", "Nom", "Any", "Massa"];
+			headers = ["ID", "Nom", "Any", "Massa"];
 			break;
 	}
 	headers.forEach((value) => {
@@ -277,3 +282,81 @@ function returnHeaders(radio) {
 	});
 	return tr;
 }
+
+// funció per inicialitzar els labels segons el radio seleccionat
+function initLabels(array) {
+	switch (returnRadio()) {
+		case "poke":
+			arrayLabels = ["Grass", "Poison", "Fire", "Flying", "Water", "Bug", "Normal", "Electric", "Ground", "Fighting", "Psychic", "Rock", "Ice", "Ghost", "Dragon"];
+			array.forEach(element => {
+				element[3].forEach( data => {
+					for (let i=0; i<arrayLabels.length; i++) {
+						if (data == arrayLabels[i]) { 
+							arrayDadesGraf[i] == undefined ? arrayDadesGraf[i] = 1 : arrayDadesGraf[i] += 1;
+							let red = Math.round(Math.random() * 255);
+							let green = Math.round(Math.random() * 255);
+							let blue = Math.round(Math.random() * 255);
+							backgroundColor[i] = `rgb(${red},${green}, ${blue})`;
+							borderColor[i] = `rgb(${red},${green}, ${blue}, 0.2)`; 
+						}
+					}
+				});	
+			});
+			break;
+		case "municipi":
+			arrayLabels = [1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 500000, 1000000, 2000000];
+			array.forEach(element => {
+					for (let i=0; i<arrayLabels.length; i++) {
+						if (element[3] <= arrayLabels[i]) { arrayDadesGraf[i] == undefined ? arrayDadesGraf[i] = 1 : arrayDadesGraf[i] += 1; }
+					};	
+			});
+			break;
+		case "movie":
+			arrayLabels = ["Drama", "Crime", "Action", "Thriller", "Biography", "History", "Adventure", "Fantasy", "Westen", "Romance", "Sci-Fi", "Mystery", "Comedy", "War", "Family", "Animation", "Musical", "Music", "Horror", "Film-Noir", "Sport"];
+			array.forEach(element => {
+				element[2].forEach( data => {
+					for (let i=0; i<arrayLabels.length; i++) {
+						if (data == arrayLabels[i]) { arrayDadesGraf[i] == undefined ? arrayDadesGraf[i] = 1 : arrayDadesGraf[i] += 1; }
+					}
+				});	
+			});
+			break;
+		case "meteorit":
+			arrayLabels = [1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 500000, 1000000, 2000000];
+			array.forEach(element => {
+				for (let i=0; i<arrayLabels.length; i++) {
+					if (element[3] <= arrayLabels[i]) { 
+						arrayDadesGraf[i] == undefined ? arrayDadesGraf[i] = 1 : arrayDadesGraf[i] += 1;
+						let red = Math.round(Math.random() * 255);
+						let green = Math.round(Math.random() * 255);
+						let blue = Math.round(Math.random() * 255);
+						backgroundColor[i] = `rgb(${red},${green}, ${blue})`;
+						borderColor[i] = `rgb(${red},${green}, ${blue}, 0.2)`;
+					}
+				};	
+			});
+			break;
+	}
+	console.log(arrayDadesGraf);
+	console.log(arrayLabels);
+	
+}
+
+const myChart = new myChart(
+	document.getElementById('myChart'),
+	config
+);
+const data = {
+	labels: arrayLabels,
+	datasets: [{
+		label: 'Dades Grafica',
+		data: arrayDadesGraf,
+		backgroundColor: backgroundColor,
+		borderColor: borderColor
+	}]
+};
+const config = {
+	type: 'polarArea',
+	data: data,
+	options: {}
+};
