@@ -1,8 +1,7 @@
 
+
+// variable chart
 let myChart;
-/* 
-	ARRAYS CHART
-*/
 
 // VARIABLES TRACTAMENT DADES
 let longitud = 1000;
@@ -11,6 +10,7 @@ let pokemons = [];
 let municipis = [];
 let meteorites = [];
 let movies = [];
+
 // POKEMONS
 fetch("js/data/pokemon.json")
 .then((response) => response.json())
@@ -27,7 +27,6 @@ fetch("js/data/pokemon.json")
 	});
 });
 
-
 // MUNICIPIS
 fetch("js/data/municipis.json")
 .then((response) => response.json())
@@ -43,7 +42,6 @@ fetch("js/data/municipis.json")
 	});
 });
 
-
 // METEORITS
 fetch("js/data/earthMeteorites.json")
 .then((response) => response.json())
@@ -58,7 +56,6 @@ fetch("js/data/earthMeteorites.json")
 		meteorites.push(meteorit);
 	});
 });
-
 
 // MOVIES
 fetch("js/data/movies.json")
@@ -76,6 +73,11 @@ fetch("js/data/movies.json")
 	});
 });
 
+// esdeveniment que detecta cada vegada que escrivim dins del camp de text
+let inputSearch = document.getElementById('txtSearch')
+inputSearch.addEventListener('input', (e) => {
+    searchList(inputSearch.value);
+});
 
 
 function mostraResults() {
@@ -84,7 +86,7 @@ function mostraResults() {
 	for (let i=0; i<longitud; i++) {
 		dades.push([pokemons[i], municipis[i], movies[i], meteorites[i]]);
 	}
-	//console.table(dades);
+	console.table(dades);
 }
 
 // funció orderList que rep string per paràmetre (asc o desc) i mostra l'array ordenada
@@ -93,9 +95,9 @@ function orderList(order) {
 	mostraResults();
 }
 // funció que retorna la posició d'un element buscat mitjantçant un prompt
-function searchList() {
-	let name = prompt("Introdueix un nom a buscar").toUpperCase();
-	let match = returnMatches(name);
+function searchList(value) {
+	// let name = prompt("Introdueix un nom a buscar").toUpperCase();
+	let match = returnMatches(value.toUpperCase());
 	// iteració per mostrar les concondances amb el paràmetre que li passem
 	// dades.forEach((item) => item.forEach(
 	// 	(x) => {
@@ -223,7 +225,7 @@ function creaTaula(array, trHeader) {
 	let divResultat = document.getElementById("resultat");
 	// inicialitzem el div per esborrar el contingut
 	divResultat.innerHTML = "";
-	initLabels(array);
+	initChart(array);
 	//creació de taula
 	let table = document.createElement("table");
 	table.appendChild(trHeader);
@@ -273,15 +275,27 @@ function returnHeaders(radio) {
 			break;
 	}
 	headers.forEach((value) => {
-		let td = document.createElement("td");
-		td.innerHTML = value;
-		tr.appendChild(td);
+		let div = document.createElement("div");
+
+		let p = document.createElement("p");
+		p.textContent = value;
+		let button = document.createElement("button");
+		let img = document.createElement("img");
+		img.classList = "header";
+		img.src = "img/sort_down.png";
+		img.width = 20;
+		button.appendChild(img);
+		div.appendChild(p);
+		div.appendChild(button);
+		let th = document.createElement("th");
+		th.appendChild(div);
+		tr.appendChild(th);
 	});
 	return tr;
 }
 
 // funció per inicialitzar els labels segons el radio seleccionat
-function initLabels(array) {
+function initChart(array) {
 	// condicional per comprovar que no existeixi un Chart inicialitzat
 	if (myChart != null) { myChart.destroy(); }
 
@@ -291,6 +305,8 @@ function initLabels(array) {
 	let borderColor = [];
 	let arrayLabels = [];
 
+	// variable de cotrol
+	let added = false;
 	// switch statement per omplir les dades segons el tipus de radio seleccionat
 	switch (returnRadio()) {
 		case "poke":
@@ -310,7 +326,15 @@ function initLabels(array) {
 			backgroundColor = randomBackgroundColor(arrayLabels.length);
 			borderColor = randomBorderColor(arrayLabels.length);
 			array.forEach(municipi => {
-				arrayLabels.forEach(habitants => { if (municipi[3] <= habitants) { arrayDadesGraf[arrayLabels.indexOf(habitants)] += 1; } })	
+				arrayLabels.forEach(habitants => { 
+					if (!added) {
+						if (municipi[3] <= habitants) { 
+							arrayDadesGraf[arrayLabels.indexOf(habitants)] += 1;
+							added = true; 
+						} 
+					}
+				})
+				added = false;	
 			});
 			break;
 		case "movie":
@@ -320,7 +344,9 @@ function initLabels(array) {
 			borderColor = randomBorderColor(arrayLabels.length);
 			array.forEach(movie => {
 				movie[2].forEach( genre => {
-					arrayLabels.forEach(label => { if (genre == label) { arrayDadesGraf[arrayLabels.indexOf(label)] += 1; } })
+					arrayLabels.forEach(label => { 
+						if (genre == label) { arrayDadesGraf[arrayLabels.indexOf(label)] += 1; } 
+					})
 				});	
 			});
 			break;
@@ -330,7 +356,15 @@ function initLabels(array) {
 			backgroundColor = randomBackgroundColor(arrayLabels.length);
 			borderColor = randomBorderColor(arrayLabels.length);
 			array.forEach(meteorit => {
-				arrayLabels.forEach(massa => { if (meteorit[3] <= massa) { arrayDadesGraf[arrayLabels.indexOf(massa)] += 1; } })
+				arrayLabels.forEach(massa => {  
+					if (!added) {
+						if (meteorit[3] <= massa) { 
+							arrayDadesGraf[arrayLabels.indexOf(massa)] += 1; 
+							added = true;
+						} 
+					}
+				});
+				added = false;
 			});
 			break;
 	}

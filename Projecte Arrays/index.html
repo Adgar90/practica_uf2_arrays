@@ -16,33 +16,37 @@
 		div, td {
 			padding: 10px;
 		}
-		td {
+		td, th {
 			border: 1px solid black;
 		}
-		img {
+		td img {
 			width: 120px;
+		}
+		.header {
+			width: 20px;
 		}
 	</style>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+	<input type="text" value="" id="txtSearch" />
 	<div>
-		<input type="radio" name="type" id="poke">
+		<input type="radio" name="type" id="poke" onclick="printDades()">
 		<label for="poke">Pokemon</label>
-		<input type="radio" name="type" id="municipi">
+		<input type="radio" name="type" id="municipi" onclick="printDades()">
 		<label for="municipi">Municipi</label>
-		<input type="radio" name="type" id="movie">
+		<input type="radio" name="type" id="movie" onclick="printDades()">
 		<label for="movie">Movies</label>
-		<input type="radio" name="type" id="meteorit">
+		<input type="radio" name="type" id="meteorit" onclick="printDades()">
 		<label for="meteorit">Meteorits</label>
 	</div>
 	<div>
 		<button onclick="location.reload()">Iniciar</button>
 		<button onclick="orderList('asc')">Order ASC</button>
 		<button onclick="orderList('desc')">Order DESC</button>
-		<button onclick="searchList()">Cercar</button>
+		<!-- <button onclick="searchList()">Cercar</button> -->
 		<button onclick="calcMitjana()">Calcula Mitjana</button>
-		<button onclick="printDades()">Print</button>
+		<!-- <button onclick="printDades()">Print</button> -->
 	</div>
 	<div id="resultat"></div>
 	<div class="chart-container" style="position: relative; width:700px">
