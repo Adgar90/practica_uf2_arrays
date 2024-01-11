@@ -1,11 +1,8 @@
-			
+
+let myChart;
 /* 
 	ARRAYS CHART
 */
-let arrayLabels = [];
-let arrayDadesGraf = [];
-let backgroundColor = [];
-let borderColor = [];
 
 // VARIABLES TRACTAMENT DADES
 let longitud = 1000;
@@ -141,7 +138,7 @@ function calcMitjana() {
 			console.log("No hi ha cap taula seleccionada");
 			return;
 	}
-	alert(resultat); // TODO: editar el missatge de resultat 
+	alert(resultat); 
 }
 // funció que crea la taula i mitjançant el DOM mostra el resultat en el div "resultat"
 function printDades() {
@@ -218,7 +215,7 @@ function returnMatches(name) {
 			match.push(element);
 		}
 	});
-	return match.sort();
+	return match;
 }
 // funció que crea una taula de l'array que li passem per paràmetre
 function creaTaula(array, trHeader) {
@@ -285,78 +282,132 @@ function returnHeaders(radio) {
 
 // funció per inicialitzar els labels segons el radio seleccionat
 function initLabels(array) {
+	// condicional per comprovar que no existeixi un Chart inicialitzat
+	if (myChart != null) { myChart.destroy(); }
+
+	// arrays per la creació del Chart
+	let arrayDadesGraf = [];
+	let backgroundColor = [];
+	let borderColor = [];
+	let arrayLabels = [];
+
+	// switch statement per omplir les dades segons el tipus de radio seleccionat
 	switch (returnRadio()) {
 		case "poke":
 			arrayLabels = ["Grass", "Poison", "Fire", "Flying", "Water", "Bug", "Normal", "Electric", "Ground", "Fighting", "Psychic", "Rock", "Ice", "Ghost", "Dragon"];
-			array.forEach(element => {
-				element[3].forEach( data => {
-					for (let i=0; i<arrayLabels.length; i++) {
-						if (data == arrayLabels[i]) { 
-							arrayDadesGraf[i] == undefined ? arrayDadesGraf[i] = 1 : arrayDadesGraf[i] += 1;
-							let red = Math.round(Math.random() * 255);
-							let green = Math.round(Math.random() * 255);
-							let blue = Math.round(Math.random() * 255);
-							backgroundColor[i] = `rgb(${red},${green}, ${blue})`;
-							borderColor[i] = `rgb(${red},${green}, ${blue}, 0.2)`; 
-						}
-					}
+			arrayDadesGraf = new Array(arrayLabels.length).fill(0);
+			backgroundColor = typeBgColors;
+			borderColor = typeBorderColors;
+			array.forEach(pokemon => {
+				pokemon[3].forEach( type => {
+					arrayLabels.forEach(label => { if (type == label) { arrayDadesGraf[arrayLabels.indexOf(label)] += 1; } })
 				});	
 			});
 			break;
 		case "municipi":
 			arrayLabels = [1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 500000, 1000000, 2000000];
-			array.forEach(element => {
-					for (let i=0; i<arrayLabels.length; i++) {
-						if (element[3] <= arrayLabels[i]) { arrayDadesGraf[i] == undefined ? arrayDadesGraf[i] = 1 : arrayDadesGraf[i] += 1; }
-					};	
+			arrayDadesGraf = new Array(arrayLabels.length).fill(0);
+			backgroundColor = randomBackgroundColor(arrayLabels.length);
+			borderColor = randomBorderColor(arrayLabels.length);
+			array.forEach(municipi => {
+				arrayLabels.forEach(habitants => { if (municipi[3] <= habitants) { arrayDadesGraf[arrayLabels.indexOf(habitants)] += 1; } })	
 			});
 			break;
 		case "movie":
 			arrayLabels = ["Drama", "Crime", "Action", "Thriller", "Biography", "History", "Adventure", "Fantasy", "Westen", "Romance", "Sci-Fi", "Mystery", "Comedy", "War", "Family", "Animation", "Musical", "Music", "Horror", "Film-Noir", "Sport"];
-			array.forEach(element => {
-				element[2].forEach( data => {
-					for (let i=0; i<arrayLabels.length; i++) {
-						if (data == arrayLabels[i]) { arrayDadesGraf[i] == undefined ? arrayDadesGraf[i] = 1 : arrayDadesGraf[i] += 1; }
-					}
+			arrayDadesGraf = new Array(arrayLabels.length).fill(0);
+			backgroundColor = randomBackgroundColor(arrayLabels.length);
+			borderColor = randomBorderColor(arrayLabels.length);
+			array.forEach(movie => {
+				movie[2].forEach( genre => {
+					arrayLabels.forEach(label => { if (genre == label) { arrayDadesGraf[arrayLabels.indexOf(label)] += 1; } })
 				});	
 			});
 			break;
 		case "meteorit":
 			arrayLabels = [1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 500000, 1000000, 2000000];
-			array.forEach(element => {
-				for (let i=0; i<arrayLabels.length; i++) {
-					if (element[3] <= arrayLabels[i]) { 
-						arrayDadesGraf[i] == undefined ? arrayDadesGraf[i] = 1 : arrayDadesGraf[i] += 1;
-						let red = Math.round(Math.random() * 255);
-						let green = Math.round(Math.random() * 255);
-						let blue = Math.round(Math.random() * 255);
-						backgroundColor[i] = `rgb(${red},${green}, ${blue})`;
-						borderColor[i] = `rgb(${red},${green}, ${blue}, 0.2)`;
-					}
-				};	
+			arrayDadesGraf = new Array(arrayLabels.length).fill(0);
+			backgroundColor = randomBackgroundColor(arrayLabels.length);
+			borderColor = randomBorderColor(arrayLabels.length);
+			array.forEach(meteorit => {
+				arrayLabels.forEach(massa => { if (meteorit[3] <= massa) { arrayDadesGraf[arrayLabels.indexOf(massa)] += 1; } })
 			});
 			break;
 	}
-	console.log(arrayDadesGraf);
-	console.log(arrayLabels);
-	
+
+	// data del nostre Chart
+	const data = {
+		labels: arrayLabels,
+		datasets: [{
+			label: 'Dades Grafica',
+			data: arrayDadesGraf,
+			backgroundColor: backgroundColor,
+			borderColor: borderColor
+		}]
+	};
+	// configuració del nostre Chart
+	const config = {
+		type: 'polarArea',
+		data: data,
+		options: {}
+	};
+	// inicialització del Chart amb la config setejada
+	myChart = new Chart(
+		document.getElementById('myChart'),
+		config
+	);
 }
 
-const myChart = new myChart(
-	document.getElementById('myChart'),
-	config
-);
-const data = {
-	labels: arrayLabels,
-	datasets: [{
-		label: 'Dades Grafica',
-		data: arrayDadesGraf,
-		backgroundColor: backgroundColor,
-		borderColor: borderColor
-	}]
-};
-const config = {
-	type: 'polarArea',
-	data: data,
-	options: {}
-};
+
+
+// variables with rgb color for pokemons
+
+const typeBgColors = [
+	"rgb(122, 199, 76, 0.2)", // grass type
+	"rgb(163, 62, 161, 0.2)", // poison type
+	"rgb(238, 129, 48, 0.2)", // fire type
+	"rgb(169, 143, 243, 0.2)", // flying type
+	"rgb(99, 144, 240, 0.2)", // water type
+	"rgb(166, 185, 26, 0.2)", // bug type
+	"rgb(168, 167, 122, 0.2)", // normal type
+	"rgb(247, 208, 44, 0.2)", // electric type
+	"rgb(226, 191, 101, 0.2)", // ground type
+	"rgb(194, 46, 40, 0.2)", // fighting type
+	"rgb(249, 85, 135, 0.2)", // psychic type
+	"rgb(182, 161, 54, 0.2)", // rock type
+	"rgb(150, 217, 214, 0.2)", // ice type
+	"rgb(115, 87, 151, 0.2)", // ghost type
+	"rgb(111, 53, 252, 0.2)" // dragon type
+];
+const typeBorderColors = [
+	"rgb(122, 199, 76)", // grass type
+	"rgb(163, 62, 161)", // poison type
+	"rgb(238, 129, 48)", // fire type
+	"rgb(169, 143, 243)", // flying type
+	"rgb(99, 144, 240)", // water type
+	"rgb(166, 185, 26)", // bug type
+	"rgb(168, 167, 122)", // normal type
+	"rgb(247, 208, 44)", // electric type
+	"rgb(226, 191, 101)", // ground type
+	"rgb(194, 46, 40)", // fighting type
+	"rgb(249, 85, 135)", // psychic type
+	"rgb(182, 161, 54)", // rock type
+	"rgb(150, 217, 214)", // ice type
+	"rgb(115, 87, 151)", // ghost type
+	"rgb(111, 53, 252)" // dragon type
+];
+
+function randomBorderColor(length) {
+	let colors = [];
+	for (let i=0; i<length; i++) {
+		colors.push(`rgb(${Math.round(Math.random()*255)}, ${Math.round(Math.random()*255)}, ${Math.round(Math.random()*255)})`);
+	}
+	return colors;
+}
+function randomBackgroundColor(length) {
+	let colors = [];
+	for (let i=0; i<length; i++) {
+		colors.push(`rgb(${Math.round(Math.random()*255)}, ${Math.round(Math.random()*255)}, ${Math.round(Math.random()*255)}, 0.2)`);
+	}
+	return colors;
+}
