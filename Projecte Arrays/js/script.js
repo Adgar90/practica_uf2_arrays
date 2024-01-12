@@ -12,6 +12,8 @@ let meteorites = [];
 let movies = [];
 
 
+let order = "asc";
+
 console.clear();
 // POKEMONS
 fetch("js/data/pokemon.json")
@@ -27,7 +29,7 @@ fetch("js/data/pokemon.json")
 		pokemon.push(element.weight);
 		pokemons.push(pokemon);	
 	});
-	console.table(pokemons);
+	//console.table(pokemons);
 });
 
 // MUNICIPIS
@@ -43,7 +45,7 @@ fetch("js/data/municipis.json")
 		municipi.push(element.nombre_habitants);
 		municipis.push(municipi);
 	});
-	console.table(municipis);
+	//console.table(municipis);
 });
 
 // METEORITS
@@ -55,11 +57,11 @@ fetch("js/data/earthMeteorites.json")
 		let meteorit = [];
 		meteorit.push(element.id);
 		meteorit.push(element.name);
-		meteorit.push(element.year);
+		meteorit.push(parseInt(element.year));
 		meteorit.push(element.mass);
 		meteorites.push(meteorit);
 	});
-	console.table(meteorites);
+	//console.table(meteorites);
 });
 
 // MOVIES
@@ -76,7 +78,7 @@ fetch("js/data/movies.json")
 		movie.push(element.rating);
 		movies.push(movie);
 	});
-	console.table(movies);
+	//console.table(movies);
 });
 
 // esdeveniment que detecta cada vegada que escrivim dins del camp de text
@@ -96,9 +98,9 @@ function mostraResults() {
 }
 
 // funció orderList que rep string per paràmetre (asc o desc) i mostra l'array ordenada
-function orderList(order) {
+function orderBy(order, index) {
 	order == "asc" ? ordenaAsc() : ordenaDesc();
-	mostraResults();
+	//mostraResults();
 }
 // funció que retorna la posició d'un element buscat mitjantçant un prompt
 function searchList(value) {
@@ -265,7 +267,11 @@ function returnRadio() {
 
 // funció que retorna els headers de la nostra taula segons quina hagi seleccionada
 function returnHeaders(radio) {
+	let trId = `tr${radio}`;
+	let existent = document.getElementById(trId);
+	if (existent != null && existent.id == trId) { return existent; }
 	let tr = document.createElement("tr");
+	tr.id = trId;
 	let headers = [];
 	switch (radio) {
 		case "poke":
@@ -293,7 +299,7 @@ function returnHeaders(radio) {
 		let img = document.createElement("img");
 
 		// set attributes
-		button.setAttribute('onclick', `itemSort(${headers.indexOf(value)})`);
+		button.setAttribute('onclick', `sortColumn(${headers.indexOf(value)})`);
 		img.classList = "header"; // set class
 		img.src = "img/sort_down.png"; // set src
 		img.width = 20; // set width
@@ -311,16 +317,20 @@ function returnHeaders(radio) {
 	});
 	return tr;
 }
-function itemSort(index) {
+function sortColumn(index) {
 	let img = document.getElementsByClassName("header");
-	console.log(img);
 	for (let imatge of img) {
+		console.log(imatge.src);
+		console.log(imatge.src.includes("down"));
 		if (imatge.src.includes("down")) {
 			imatge.src = "img/sort_up.png";
+			order = "asc";
 		} else {
 			imatge.src = "img/sort_down.png";
+			order = "desc";
 		}
 	};
+	orderBy(order, index);
 }
 // funció per inicialitzar els labels segons el radio seleccionat
 function initChart(array) {
