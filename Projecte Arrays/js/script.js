@@ -11,6 +11,8 @@ let municipis = [];
 let meteorites = [];
 let movies = [];
 
+
+console.clear();
 // POKEMONS
 fetch("js/data/pokemon.json")
 .then((response) => response.json())
@@ -25,6 +27,7 @@ fetch("js/data/pokemon.json")
 		pokemon.push(element.weight);
 		pokemons.push(pokemon);	
 	});
+	console.table(pokemons);
 });
 
 // MUNICIPIS
@@ -40,6 +43,7 @@ fetch("js/data/municipis.json")
 		municipi.push(element.nombre_habitants);
 		municipis.push(municipi);
 	});
+	console.table(municipis);
 });
 
 // METEORITS
@@ -55,6 +59,7 @@ fetch("js/data/earthMeteorites.json")
 		meteorit.push(element.mass);
 		meteorites.push(meteorit);
 	});
+	console.table(meteorites);
 });
 
 // MOVIES
@@ -71,6 +76,7 @@ fetch("js/data/movies.json")
 		movie.push(element.rating);
 		movies.push(movie);
 	});
+	console.table(movies);
 });
 
 // esdeveniment que detecta cada vegada que escrivim dins del camp de text
@@ -146,6 +152,7 @@ function calcMitjana() {
 function printDades() {
 	let radio = returnRadio();
 	let trHeader = document.createElement("tr");
+	document.getElementById('txtSearch').value = "";
 	switch (radio) {
 		case "poke":
 			trHeader = returnHeaders(radio);
@@ -275,25 +282,46 @@ function returnHeaders(radio) {
 			break;
 	}
 	headers.forEach((value) => {
+		// create div
 		let div = document.createElement("div");
-
+		div.id = "header"; // set id
+		// create p
 		let p = document.createElement("p");
-		p.textContent = value;
+		p.textContent = value; // set value
+		// create button & img 
 		let button = document.createElement("button");
 		let img = document.createElement("img");
-		img.classList = "header";
-		img.src = "img/sort_down.png";
-		img.width = 20;
-		button.appendChild(img);
-		div.appendChild(p);
-		div.appendChild(button);
+
+		// set attributes
+		button.setAttribute('onclick', `itemSort(${headers.indexOf(value)})`);
+		img.classList = "header"; // set class
+		img.src = "img/sort_down.png"; // set src
+		img.width = 20; // set width
+
+		//create th
 		let th = document.createElement("th");
+		if (value == "Imatge") { button.setAttribute("style", "visibility: hidden"); } // en la columna de les imatges amaguem els buttons
+		// appends
+		button.appendChild(img);
+		div.appendChild(p); 
+		div.appendChild(button);
+
 		th.appendChild(div);
 		tr.appendChild(th);
 	});
 	return tr;
 }
-
+function itemSort(index) {
+	let img = document.getElementsByClassName("header");
+	console.log(img);
+	for (let imatge of img) {
+		if (imatge.src.includes("down")) {
+			imatge.src = "img/sort_up.png";
+		} else {
+			imatge.src = "img/sort_down.png";
+		}
+	};
+}
 // funció per inicialitzar els labels segons el radio seleccionat
 function initChart(array) {
 	// condicional per comprovar que no existeixi un Chart inicialitzat
