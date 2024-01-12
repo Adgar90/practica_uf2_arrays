@@ -42,7 +42,7 @@ fetch("js/data/municipis.json")
 		municipi.push(element.municipi_nom);
 		municipi.push(element.municipi_escut);
 		municipi.push(element.ine);
-		municipi.push(element.nombre_habitants);
+		municipi.push(parseInt(element.nombre_habitants));
 		municipis.push(municipi);
 	});
 	//console.table(municipis);
@@ -55,10 +55,10 @@ fetch("js/data/earthMeteorites.json")
 	dades = data;		
 	dades.forEach(element => {	
 		let meteorit = [];
-		meteorit.push(element.id);
+		meteorit.push(parseInt(element.id));
 		meteorit.push(element.name);
 		meteorit.push(parseInt(element.year));
-		meteorit.push(element.mass);
+		meteorit.push(parseInt(element.mass));
 		meteorites.push(meteorit);
 	});
 	//console.table(meteorites);
@@ -95,12 +95,6 @@ function mostraResults() {
 		dades.push([pokemons[i], municipis[i], movies[i], meteorites[i]]);
 	}
 	console.table(dades);
-}
-
-// funció orderList que rep string per paràmetre (asc o desc) i mostra l'array ordenada
-function orderBy(order, index) {
-	order == "asc" ? ordenaAsc() : ordenaDesc();
-	//mostraResults();
 }
 // funció que retorna la posició d'un element buscat mitjantçant un prompt
 function searchList(value) {
@@ -176,23 +170,6 @@ function printDades() {
 			console.log("No hi ha cap taula seleccionada");
 			return;
 	}
-}
-// funció per ordenar de forma ascedent (a-z) els valors de l'array
-function ordenaAsc() {
-	pokemons.sort();
-	municipis.sort();
-	movies.sort();
-	meteorites.sort();
-	printDades();
-}
-//funció per ordenar de forma descendent (z-a) els valors de l'array
-function ordenaDesc() {
-	ordenaAsc();
-	pokemons.reverse();
-	municipis.reverse();
-	movies.reverse();
-	meteorites.reverse();
-	printDades();
 }
 // funció que retorna les coincidencies amb el paràmetre proposat
 function returnMatches(name) {
@@ -301,7 +278,7 @@ function returnHeaders(radio) {
 		// set attributes
 		button.setAttribute('onclick', `sortColumn(${headers.indexOf(value)})`);
 		img.classList = "header"; // set class
-		img.src = "img/sort_down.png"; // set src
+		img.src = "img/sort_up.png"; // set src
 		img.width = 20; // set width
 
 		//create th
@@ -320,8 +297,6 @@ function returnHeaders(radio) {
 function sortColumn(index) {
 	let img = document.getElementsByClassName("header");
 	for (let imatge of img) {
-		console.log(imatge.src);
-		console.log(imatge.src.includes("down"));
 		if (imatge.src.includes("down")) {
 			imatge.src = "img/sort_up.png";
 			order = "asc";
@@ -330,7 +305,40 @@ function sortColumn(index) {
 			order = "desc";
 		}
 	};
-	orderBy(order, index);
+	switch (returnRadio()) {
+		case "poke":
+			pokemons.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+			if (order == "desc") { pokemons.reverse(); }
+			break;
+		case "municipi":
+			municipis.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+			if (order == "desc") { municipis.reverse(); }
+			break;
+		case "movie":
+			movies.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+			if (order == "desc") { movies.reverse(); }
+			break;
+		case "meteorit":
+			meteorites.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+			if (order == "desc") { meteorites.reverse(); }
+			break;
+		default:
+			console.log("No hi ha cap taula seleccionada");
+			return;
+	}
+	printDades();
+}
+
+// funció per comparar valors
+function comparaValors(a, b) {
+	if (Number.isInteger(a)) { return a - b; }
+	if (a < b) {
+		return -1;
+	} else if (a > b) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 // funció per inicialitzar els labels segons el radio seleccionat
 function initChart(array) {
