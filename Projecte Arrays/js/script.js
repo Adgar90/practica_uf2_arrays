@@ -99,14 +99,7 @@ function mostraResults() {
 }
 // funció que retorna la posició d'un element buscat mitjantçant un prompt
 function searchList(value) {
-	// let name = prompt("Introdueix un nom a buscar").toUpperCase();
 	let match = returnMatches(value.toUpperCase());
-	// iteració per mostrar les concondances amb el paràmetre que li passem
-	// dades.forEach((item) => item.forEach(
-	// 	(x) => {
-	// 		if(x != undefined && x.toUpperCase().includes(name)) {
-	// 		match.push(x); 
-	// 	}}));
 	creaTaula(match, returnHeaders(returnRadio()));
 }
 // funcio que calculi la mitjana d'un valor numèric (fixar a dos decimals amb toFixed(2))
@@ -116,28 +109,28 @@ function calcMitjana() {
 	let radio = returnRadio();
 	switch (radio) {
 		case "poke":
-			pokemons.forEach(pokemon => {
+			arrayUsat.forEach(pokemon => {
 				valorNum += parseFloat(pokemon[pokemon.length-1].substr(0, pokemon[pokemon.length-1].search(" ")));
 			} ); 
-			resultat = `La mitjana de pes dels pokemons és de ${(valorNum/pokemons.length).toFixed(2)} kg.`;
+			resultat = `La mitjana de pes dels pokemons és de ${(valorNum/arrayUsat.length).toFixed(2)} kg.`;
 			break;
 		case "municipi":		
-			municipis.forEach(municipi => {
+		arrayUsat.forEach(municipi => {
 				valorNum += parseFloat(municipi[municipi.length-1]);
 			} ); 
-			resultat = `La mitjana d'habitants dels municipis és de ${(valorNum/municipis.length).toFixed(2)} habitants.`;
+			resultat = `La mitjana d'habitants dels municipis és de ${(valorNum/arrayUsat.length).toFixed(2)} habitants.`;
 			break;
 		case "movie":
-			movies.forEach(movie => {
+			arrayUsat.forEach(movie => {
 				valorNum += parseFloat(movie[movie.length-1]);
 			} ); 
-			resultat = `La mitjana de valoració de les pel·lícules és de ${(valorNum/movies.length).toFixed(2)} de rating.`;
+			resultat = `La mitjana de valoració de les pel·lícules és de ${(valorNum/arrayUsat.length).toFixed(2)} de rating.`;
 			break;
 		case "meteorit":
-			meteorites.forEach(meteorit => {
+			arrayUsat.forEach(meteorit => {
 				meteorit[meteorit.length-1] != undefined ? valorNum += parseFloat(meteorit[meteorit.length-1]) : valorNum += 0;
 			} ); 
-			resultat = `La mitjana de massa dels meteorits és de ${(valorNum/meteorites.length).toFixed(2)} kg.`;
+			resultat = `La mitjana de massa dels meteorits és de ${(valorNum/arrayUsat.length).toFixed(2)} kg.`;
 			break;
 		default:
 			console.log("No hi ha cap taula seleccionada");
@@ -277,13 +270,11 @@ function returnHeaders(radio) {
 		// create button & img 
 		let button = document.createElement("button");
 		let img = document.createElement("img");
-
 		// set attributes
 		button.setAttribute('onclick', `sortColumn(${headers.indexOf(value)})`);
 		img.classList = "header"; // set class
 		img.src = "img/sort_up.png"; // set src
 		img.width = 20; // set width
-
 		//create th
 		let th = document.createElement("th");
 		if (value == "Imatge") { button.setAttribute("style", "visibility: hidden"); } // en la columna de les imatges amaguem els buttons
@@ -291,7 +282,6 @@ function returnHeaders(radio) {
 		button.appendChild(img);
 		div.appendChild(p); 
 		div.appendChild(button);
-
 		th.appendChild(div);
 		tr.appendChild(th);
 	});
@@ -311,33 +301,15 @@ function sortColumn(index) {
 	
 	arrayUsat.sort(function(a, b) { return comparaValors(a[index], b[index]); });
 	if (order == "desc") { arrayUsat.reverse(); }
-	// switch (returnRadio()) {
-	// 	case "poke":
-	// 		pokemons.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-	// 		if (order == "desc") { pokemons.reverse(); }
-	// 		break;
-	// 	case "municipi":
-	// 		municipis.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-	// 		if (order == "desc") { municipis.reverse(); }
-	// 		break;
-	// 	case "movie":
-	// 		movies.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-	// 		if (order == "desc") { movies.reverse(); }
-	// 		break;
-	// 	case "meteorit":
-	// 		meteorites.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-	// 		if (order == "desc") { meteorites.reverse(); }
-	// 		break;
-	// 	default:
-	// 		console.log("No hi ha cap taula seleccionada");
-	// 		return;
-	// }
 	creaTaula(arrayUsat, returnHeaders(returnRadio()));
 }
 
 // funció per comparar valors
 function comparaValors(a, b) {
 	if (Number.isInteger(a)) { return a - b; }
+	if (returnRadio() == "poke") { 
+		return a.substr(0, a.search(" ")) - b.substr(0, b.search(" "));
+	}
 	if (a < b) {
 		return -1;
 	} else if (a > b) {
