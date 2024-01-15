@@ -1,6 +1,6 @@
 // variable global tractament dades
 let arrayUsat = [];
-
+let radioMarcat = false;
 // variable chart
 let myChart;
 
@@ -14,8 +14,6 @@ let movies = [];
 
 
 let order = "asc";
-
-console.clear();
 // POKEMONS
 fetch("js/data/pokemon.json")
 .then((response) => response.json())
@@ -107,29 +105,20 @@ function calcMitjana() {
 	let valorNum = 0;
 	let resultat = 0;
 	let radio = returnRadio();
+	arrayUsat.forEach(data => {
+		valorNum += parseFloat(data[data.length-1]);
+	} ); 
 	switch (radio) {
 		case "poke":
-			arrayUsat.forEach(pokemon => {
-				valorNum += parseFloat(pokemon[pokemon.length-1].substr(0, pokemon[pokemon.length-1].search(" ")));
-			} ); 
 			resultat = `La mitjana de pes dels pokemons és de ${(valorNum/arrayUsat.length).toFixed(2)} kg.`;
 			break;
 		case "municipi":		
-		arrayUsat.forEach(municipi => {
-				valorNum += parseFloat(municipi[municipi.length-1]);
-			} ); 
 			resultat = `La mitjana d'habitants dels municipis és de ${(valorNum/arrayUsat.length).toFixed(2)} habitants.`;
 			break;
 		case "movie":
-			arrayUsat.forEach(movie => {
-				valorNum += parseFloat(movie[movie.length-1]);
-			} ); 
 			resultat = `La mitjana de valoració de les pel·lícules és de ${(valorNum/arrayUsat.length).toFixed(2)} de rating.`;
 			break;
 		case "meteorit":
-			arrayUsat.forEach(meteorit => {
-				meteorit[meteorit.length-1] != undefined ? valorNum += parseFloat(meteorit[meteorit.length-1]) : valorNum += 0;
-			} ); 
 			resultat = `La mitjana de massa dels meteorits és de ${(valorNum/arrayUsat.length).toFixed(2)} kg.`;
 			break;
 		default:
@@ -140,53 +129,26 @@ function calcMitjana() {
 }
 // funció que crea la taula i mitjançant el DOM mostra el resultat en el div "resultat"
 function printDades() {
-	let radio = returnRadio();
-	let trHeader = document.createElement("tr");
 	document.getElementById("btn").hidden = false;
 	document.getElementById('txtSearch').value = "";
-	switch (radio) {
-		case "poke":
-			trHeader = returnHeaders(radio);
-			arrayUsat = pokemons;
-			break;
-		case "municipi":		
-			trHeader = returnHeaders(radio);
-			arrayUsat = municipis;
-			break;
-		case "movie":
-			trHeader = returnHeaders(radio);
-			arrayUsat = movies;
-			break;
-		case "meteorit":
-			trHeader = returnHeaders(radio);
-			arrayUsat = meteorites;
-			break;
-		default:
-			console.log("No hi ha cap taula seleccionada");
-			return;
-	}
-	creaTaula(arrayUsat, trHeader);
+	if (arrayUsat.length == 0 || radioMarcat == false) { arrayUsat = returnTaula(); }
+
+	creaTaula(arrayUsat, returnHeaders(returnRadio()));
 }
 // funció que retorna les coincidencies amb el paràmetre proposat
 function returnMatches(name) {
 	let index = 0;
-	let array = [];
-	let radio = returnRadio();
-	switch (radio) {
+	switch (returnRadio()) {
 		case "poke":
-			array = pokemons;
 			index = 2;
 			break;
 		case "municipi":
-			array = municipis;
 			index = 0;
 			break;
 		case "movie":
-			array = movies;
 			index = 1;
 			break;
 		case "meteorit":
-			array = meteorites;
 			index = 1;
 			break;
 		default:
@@ -194,7 +156,7 @@ function returnMatches(name) {
 			return;
 	}
 	arrayUsat = [];
-	array.forEach((element) => {
+	returnTaula().forEach((element) => {
 		if(element[index].toUpperCase().includes(name)) {
 			arrayUsat.push(element);
 		}
@@ -229,8 +191,24 @@ function creaTaula(array, trHeader) {
 
 	divResultat.appendChild(table);
 }
-
-// funció que retorna la taula seleccionada o empty en cas de no haber cap
+// funcio que retorna la taula que em seleccionat amb el radio
+function returnTaula() {
+	switch (returnRadio()) {
+		case "poke":
+			return pokemons;
+			break;
+		case "municipi":
+			return municipis;
+			break;
+		case "movie":
+			return movies;
+			break;
+		case "meteorit":
+			return meteorites;
+			break;
+	}
+}
+// funció que retorna el radio seleccionada o empty en cas de no haber cap
 function returnRadio() {
 	let inputs = document.querySelectorAll("input");
 	let radio = "";
@@ -307,7 +285,7 @@ function sortColumn(index) {
 // funció per comparar valors
 function comparaValors(a, b) {
 	if (Number.isInteger(a)) { return a - b; }
-	if (returnRadio() == "poke") { 
+	if (returnRadio() == "poke" && a.includes("kg")) { 
 		return a.substr(0, a.search(" ")) - b.substr(0, b.search(" "));
 	}
 	if (a < b) {
