@@ -54,9 +54,10 @@
 		<!-- <button onclick="searchList()">Cercar</button> -->
 		<button onclick="calcMitjana()">Calcula Mitjana</button>
 		<!-- <button onclick="printDades()">Print</button> -->
+		<button id="btn" onclick="switchVista()" hidden>Mostra Chart</button>
 	</div>
 	<div id="resultat"></div>
-	<div class="chart-container" style="position: relative; width:700px">
+	<div id="chart-container" style="position: relative; width:700px" hidden>
 		<canvas id="myChart"></canvas>
 	</div>
 	<script src="js/script.js"></script>

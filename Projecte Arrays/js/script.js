@@ -1,4 +1,5 @@
-
+// variable global tractament dades
+let arrayUsat = [];
 
 // variable chart
 let myChart;
@@ -58,7 +59,7 @@ fetch("js/data/earthMeteorites.json")
 		meteorit.push(parseInt(element.id));
 		meteorit.push(element.name);
 		meteorit.push(parseInt(element.year));
-		meteorit.push(parseInt(element.mass));
+		element.mass == undefined ? meteorit.push(0) : meteorit.push(parseInt(element.mass));
 		meteorites.push(meteorit);
 	});
 	//console.table(meteorites);
@@ -148,28 +149,30 @@ function calcMitjana() {
 function printDades() {
 	let radio = returnRadio();
 	let trHeader = document.createElement("tr");
+	document.getElementById("btn").hidden = false;
 	document.getElementById('txtSearch').value = "";
 	switch (radio) {
 		case "poke":
 			trHeader = returnHeaders(radio);
-			creaTaula(pokemons, trHeader);
+			arrayUsat = pokemons;
 			break;
 		case "municipi":		
 			trHeader = returnHeaders(radio);
-			creaTaula(municipis, trHeader);
+			arrayUsat = municipis;
 			break;
 		case "movie":
 			trHeader = returnHeaders(radio);
-			creaTaula(movies, trHeader);
+			arrayUsat = movies;
 			break;
 		case "meteorit":
 			trHeader = returnHeaders(radio);
-			creaTaula(meteorites, trHeader);
+			arrayUsat = meteorites;
 			break;
 		default:
 			console.log("No hi ha cap taula seleccionada");
 			return;
 	}
+	creaTaula(arrayUsat, trHeader);
 }
 // funció que retorna les coincidencies amb el paràmetre proposat
 function returnMatches(name) {
@@ -197,13 +200,13 @@ function returnMatches(name) {
 			console.log("No hi ha cap taula seleccionada");
 			return;
 	}
-	let match = [];
+	arrayUsat = [];
 	array.forEach((element) => {
 		if(element[index].toUpperCase().includes(name)) {
-			match.push(element);
+			arrayUsat.push(element);
 		}
 	});
-	return match;
+	return arrayUsat;
 }
 // funció que crea una taula de l'array que li passem per paràmetre
 function creaTaula(array, trHeader) {
@@ -305,28 +308,31 @@ function sortColumn(index) {
 			order = "desc";
 		}
 	};
-	switch (returnRadio()) {
-		case "poke":
-			pokemons.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-			if (order == "desc") { pokemons.reverse(); }
-			break;
-		case "municipi":
-			municipis.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-			if (order == "desc") { municipis.reverse(); }
-			break;
-		case "movie":
-			movies.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-			if (order == "desc") { movies.reverse(); }
-			break;
-		case "meteorit":
-			meteorites.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-			if (order == "desc") { meteorites.reverse(); }
-			break;
-		default:
-			console.log("No hi ha cap taula seleccionada");
-			return;
-	}
-	printDades();
+	
+	arrayUsat.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+	if (order == "desc") { arrayUsat.reverse(); }
+	// switch (returnRadio()) {
+	// 	case "poke":
+	// 		pokemons.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+	// 		if (order == "desc") { pokemons.reverse(); }
+	// 		break;
+	// 	case "municipi":
+	// 		municipis.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+	// 		if (order == "desc") { municipis.reverse(); }
+	// 		break;
+	// 	case "movie":
+	// 		movies.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+	// 		if (order == "desc") { movies.reverse(); }
+	// 		break;
+	// 	case "meteorit":
+	// 		meteorites.sort(function(a, b) { return comparaValors(a[index], b[index]); });
+	// 		if (order == "desc") { meteorites.reverse(); }
+	// 		break;
+	// 	default:
+	// 		console.log("No hi ha cap taula seleccionada");
+	// 		return;
+	// }
+	creaTaula(arrayUsat, returnHeaders(returnRadio()));
 }
 
 // funció per comparar valors
@@ -490,4 +496,19 @@ function randomBackgroundColor(length) {
 		colors.push(`rgb(${Math.round(Math.random()*255)}, ${Math.round(Math.random()*255)}, ${Math.round(Math.random()*255)}, 0.2)`);
 	}
 	return colors;
+}
+
+function switchVista() {
+	let btn = document.getElementById("btn");
+	let chart = document.getElementById("chart-container");
+	let taula = document.getElementById("resultat");
+	if (btn.textContent == "Mostra Chart") {
+		btn.textContent = "Mostra Taula";
+		taula.hidden = true;
+		chart.hidden = false;
+	} else {
+		btn.textContent = "Mostra Chart";
+		chart.hidden = true;
+		taula.hidden = false;
+	}
 }
