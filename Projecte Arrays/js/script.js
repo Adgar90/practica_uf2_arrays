@@ -11,24 +11,23 @@ let pokemons = [];
 let municipis = [];
 let meteorites = [];
 let movies = [];
-
-
 let order = "asc";
+
 // POKEMONS
 fetch("js/data/pokemon.json")
 .then((response) => response.json())
 .then((data) => {
 	dades= data.pokemon;
 	dades.forEach(element => {
-		let pokemon = [];
-		pokemon.push(element.num);
-		pokemon.push(element.img);
-		pokemon.push(element.name);
-		pokemon.push(element.type);
-		pokemon.push(element.weight);
+		let pokemon = {
+			num : element.num,
+			img : element.img,
+			name : element.name,
+			type : element.type,
+			weight : element.weight
+		}
 		pokemons.push(pokemon);	
 	});
-	//console.table(pokemons);
 });
 
 // MUNICIPIS
@@ -36,15 +35,15 @@ fetch("js/data/municipis.json")
 .then((response) => response.json())
 .then((data) => {
 	dades = data.elements;
-	dades.forEach(element => {	
-		let municipi = [];
-		municipi.push(element.municipi_nom);
-		municipi.push(element.municipi_escut);
-		municipi.push(element.ine);
-		municipi.push(parseInt(element.nombre_habitants));
+	dades.forEach(element => {
+		let municipi = {
+			name : element.municipi_nom,
+			img : element.municipi_escut,
+			ine : element.ine,
+			habitants : parseInt(element.nombre_habitants)
+		}
 		municipis.push(municipi);
 	});
-	//console.table(municipis);
 });
 
 // METEORITS
@@ -52,32 +51,32 @@ fetch("js/data/earthMeteorites.json")
 .then((response) => response.json())
 .then((data) => {
 	dades = data;		
-	dades.forEach(element => {	
-		let meteorit = [];
-		meteorit.push(parseInt(element.id));
-		meteorit.push(element.name);
-		meteorit.push(parseInt(element.year));
-		element.mass == undefined ? meteorit.push(0) : meteorit.push(parseInt(element.mass));
+	dades.forEach(element => {
+		let meteorit = {
+			id : parseInt(element.id),
+			name : element.name,
+			year : parseInt(element.year),
+			mass : element.mass == undefined ? 0 : parseInt(element.mass)
+		}
 		meteorites.push(meteorit);
 	});
-	//console.table(meteorites);
 });
 
 // MOVIES
 fetch("js/data/movies.json")
 .then((response) => response.json())
 .then((data) => {
-	dades = data.movies;
+	dades = data.movies
 	dades.forEach(element => {
-		let movie = [];
-		movie.push(element.url);
-		movie.push(element.title);
-		movie.push(element.genres);
-		movie.push(element.year);
-		movie.push(element.rating);
+		let movie = {
+			img : element.url,
+			name : element.title,
+			genres : element.genres,
+			year : element.year,
+			rating : element.rating
+		}
 		movies.push(movie);
 	});
-	//console.table(movies);
 });
 
 // esdeveniment que detecta cada vegada que escrivim dins del camp de text
@@ -86,27 +85,13 @@ inputSearch.addEventListener('input', (e) => {
     searchList(inputSearch.value);
 });
 
-
-function mostraResults() {
-	console.clear();
-	dades = [];
-	for (let i=0; i<longitud; i++) {
-		dades.push([pokemons[i], municipis[i], movies[i], meteorites[i]]);
-	}
-	console.table(dades);
-}
-// funció que retorna la posició d'un element buscat mitjantçant un prompt
-function searchList(value) {
-	let match = returnMatches(value.toUpperCase());
-	creaTaula(match, returnHeaders(returnRadio()));
-}
-// funcio que calculi la mitjana d'un valor numèric (fixar a dos decimals amb toFixed(2))
+// funcio que calcula la mitjana d'un valor numèric (fixar a dos decimals amb toFixed(2))
 function calcMitjana() {
 	let valorNum = 0;
 	let resultat = 0;
 	let radio = returnRadio();
 	arrayUsat.forEach(data => {
-		valorNum += parseFloat(data[data.length-1]);
+		valorNum += parseFloat(Object.values(data)[Object.keys(data).length-1]);
 	} ); 
 	switch (radio) {
 		case "poke":
@@ -127,6 +112,42 @@ function calcMitjana() {
 	}
 	alert(resultat); 
 }
+// funció que retorna la posició d'un element buscat mitjantçant un prompt
+function searchList(value) {
+	let match = returnMatches(value.toUpperCase());
+	creaTaula(match, returnHeaders(returnRadio()));
+}
+function sortColumn(index) {
+	let img = document.getElementsByClassName("header");
+	for (let imatge of img) {
+		if (imatge.src.includes("down")) {
+			imatge.src = "img/sort_up.png";
+			order = "asc";
+		} else {
+			imatge.src = "img/sort_down.png";
+			order = "desc";
+		}
+	};
+	
+	arrayUsat.sort(function(a, b) { return comparaValors(Object.values(a)[index], Object.values(b)[index]); });
+	if (order == "desc") { arrayUsat.reverse(); }
+	creaTaula(arrayUsat, returnHeaders(returnRadio()));
+}
+
+// funció per comparar valors
+function comparaValors(a, b) {
+	if (Number.isInteger(a)) { return a - b; }
+	if (returnRadio() == "poke" && a.includes("kg")) { 
+		return a.substr(0, a.search(" ")) - b.substr(0, b.search(" "));
+	}
+	if (a < b) {
+		return -1;
+	} else if (a > b) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
 // funció que crea la taula i mitjançant el DOM mostra el resultat en el div "resultat"
 function printDades() {
 	document.getElementById("btn").hidden = false;
@@ -134,34 +155,6 @@ function printDades() {
 	if (arrayUsat.length == 0 || radioMarcat == false) { arrayUsat = returnTaula(); }
 
 	creaTaula(arrayUsat, returnHeaders(returnRadio()));
-}
-// funció que retorna les coincidencies amb el paràmetre proposat
-function returnMatches(name) {
-	let index = 0;
-	switch (returnRadio()) {
-		case "poke":
-			index = 2;
-			break;
-		case "municipi":
-			index = 0;
-			break;
-		case "movie":
-			index = 1;
-			break;
-		case "meteorit":
-			index = 1;
-			break;
-		default:
-			console.log("No hi ha cap taula seleccionada");
-			return;
-	}
-	arrayUsat = [];
-	returnTaula().forEach((element) => {
-		if(element[index].toUpperCase().includes(name)) {
-			arrayUsat.push(element);
-		}
-	});
-	return arrayUsat;
 }
 // funció que crea una taula de l'array que li passem per paràmetre
 function creaTaula(array, trHeader) {
@@ -175,37 +168,43 @@ function creaTaula(array, trHeader) {
 	table.appendChild(trHeader);
 	array.forEach((element) => { 
 		let tr = document.createElement("tr");
-		element.forEach((data) => {
+		// iteració amb object.entries() que ens permet inserir les dades del nostre objecte a la taula. A més a més, la variable key ens permet saber quan es tracta d'una imatge per afegir l'etiqueta img
+		for (const [key, value] of Object.entries(element)) {
 			let td = document.createElement("td");
-			if (data != undefined && (data.toString().endsWith(".png") || data.toString().endsWith(".jpg"))) {
+			if (key == "img") {
 				let img = document.createElement("img");
-				img.src = data;
+				img.src = value;
 				td.appendChild(img);
 			} else {
-				td.innerHTML = data;
+				td.innerHTML = value;
 			}
 			tr.appendChild(td);
-		})
+		};
 		table.appendChild(tr);
 	});
-
 	divResultat.appendChild(table);
+}
+// funció que retorna les coincidencies amb el paràmetre proposat
+function returnMatches(name) {
+	arrayUsat = [];
+	returnTaula().forEach((element) => {
+		if(element.name.toUpperCase().includes(name)) {
+			arrayUsat.push(element);
+		}
+	});
+	return arrayUsat;
 }
 // funcio que retorna la taula que em seleccionat amb el radio
 function returnTaula() {
 	switch (returnRadio()) {
 		case "poke":
 			return pokemons;
-			break;
 		case "municipi":
 			return municipis;
-			break;
 		case "movie":
 			return movies;
-			break;
 		case "meteorit":
 			return meteorites;
-			break;
 	}
 }
 // funció que retorna el radio seleccionada o empty en cas de no haber cap
@@ -265,37 +264,6 @@ function returnHeaders(radio) {
 	});
 	return tr;
 }
-function sortColumn(index) {
-	let img = document.getElementsByClassName("header");
-	for (let imatge of img) {
-		if (imatge.src.includes("down")) {
-			imatge.src = "img/sort_up.png";
-			order = "asc";
-		} else {
-			imatge.src = "img/sort_down.png";
-			order = "desc";
-		}
-	};
-	
-	arrayUsat.sort(function(a, b) { return comparaValors(a[index], b[index]); });
-	if (order == "desc") { arrayUsat.reverse(); }
-	creaTaula(arrayUsat, returnHeaders(returnRadio()));
-}
-
-// funció per comparar valors
-function comparaValors(a, b) {
-	if (Number.isInteger(a)) { return a - b; }
-	if (returnRadio() == "poke" && a.includes("kg")) { 
-		return a.substr(0, a.search(" ")) - b.substr(0, b.search(" "));
-	}
-	if (a < b) {
-		return -1;
-	} else if (a > b) {
-		return 1;
-	} else {
-		return 0;
-	}
-}
 // funció per inicialitzar els labels segons el radio seleccionat
 function initChart(array) {
 	// condicional per comprovar que no existeixi un Chart inicialitzat
@@ -317,7 +285,7 @@ function initChart(array) {
 			backgroundColor = typeBgColors;
 			borderColor = typeBorderColors;
 			array.forEach(pokemon => {
-				pokemon[3].forEach( type => {
+				pokemon.type.forEach( type => {
 					arrayLabels.forEach(label => { if (type == label) { arrayDadesGraf[arrayLabels.indexOf(label)] += 1; } })
 				});	
 			});
@@ -330,7 +298,7 @@ function initChart(array) {
 			array.forEach(municipi => {
 				arrayLabels.forEach(habitants => { 
 					if (!added) {
-						if (municipi[3] <= habitants) { 
+						if (municipi.habitants <= habitants) { 
 							arrayDadesGraf[arrayLabels.indexOf(habitants)] += 1;
 							added = true; 
 						} 
@@ -345,7 +313,7 @@ function initChart(array) {
 			backgroundColor = randomBackgroundColor(arrayLabels.length);
 			borderColor = randomBorderColor(arrayLabels.length);
 			array.forEach(movie => {
-				movie[2].forEach( genre => {
+				movie.genres.forEach( genre => {
 					arrayLabels.forEach(label => { 
 						if (genre == label) { arrayDadesGraf[arrayLabels.indexOf(label)] += 1; } 
 					})
@@ -360,7 +328,7 @@ function initChart(array) {
 			array.forEach(meteorit => {
 				arrayLabels.forEach(massa => {  
 					if (!added) {
-						if (meteorit[3] <= massa) { 
+						if (meteorit.mass <= massa) { 
 							arrayDadesGraf[arrayLabels.indexOf(massa)] += 1; 
 							added = true;
 						} 
@@ -393,11 +361,7 @@ function initChart(array) {
 		config
 	);
 }
-
-
-
 // variables with rgb color for pokemons
-
 const typeBgColors = [
 	"rgb(122, 199, 76, 0.2)", // grass type
 	"rgb(163, 62, 161, 0.2)", // poison type
@@ -432,7 +396,7 @@ const typeBorderColors = [
 	"rgb(115, 87, 151)", // ghost type
 	"rgb(111, 53, 252)" // dragon type
 ];
-
+// funció que retorna un array de borderColors aleatoris
 function randomBorderColor(length) {
 	let colors = [];
 	for (let i=0; i<length; i++) {
@@ -440,6 +404,7 @@ function randomBorderColor(length) {
 	}
 	return colors;
 }
+// funció que retorna un array de backgroundColors aleatoris
 function randomBackgroundColor(length) {
 	let colors = [];
 	for (let i=0; i<length; i++) {
@@ -447,7 +412,7 @@ function randomBackgroundColor(length) {
 	}
 	return colors;
 }
-
+// funció que canvia vista entre taula i chart
 function switchVista() {
 	let btn = document.getElementById("btn");
 	let chart = document.getElementById("chart-container");
